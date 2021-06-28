@@ -16,18 +16,24 @@
                 <a href="#!" class="brand-logo left" style="margin-left: 15px;">
                     <img src="static/images/logo.png" width="150" height="auto"></a>
                 <ul id="nav-mobile" class="right" style="margin-right: 30px; margin-top: 35px;">
-                    <li><a href="#"><img src="static/images/linkedin.png"></a></li>
-                    <li><a href="#"><img src="static/images/twitter.png"></a></li>
-                    <li><a href="#"><img src="static/images/whatsapp.png"></a></li>
+                    <li><a href="https://www.linkedin.com/in/lautaro-delgado-curbelo/"><img src="static/images/linkedin.png"></a></li>
+                    <li><a href="https://twitter.com/LautaroDelgadoC?lang=es"><img src="static/images/twitter.png"></a></li>
+                    <li><a href="https://wa.me/5492615728568"><img src="static/images/whatsapp.png"></a></li>
                 </ul>
             </div>
         </nav>
         <!-- Page Body -->
         <div class="container">
             <div class="row" style="margin-top: 30px;">
-                <div class="col l6 s12 m6">
-                    <a id="add_button" class="waves-effect waves-light btn"><i
+                <div class="col l4 s12 m4">
+                    <a id="add_button" class="waves-effect waves-light btn modal-trigger" href="#add_modal"><i
                             class="material-icons left">add_circle_outline</i>Agregar Dispositivo</a>
+                </div>
+                <div class="input-field col l4 s12 m4">
+                    <select id="dev_filter" multiple>
+                        <option value="" disabled>Seleccione una o más opciones</option>
+                    </select>
+                    <label>Tipos de Dispositivos</label>
                 </div>
             </div>
 
@@ -36,6 +42,60 @@
 
                 </ul>
             </div>
+        </div>
+        <!-- Modal Form for adding/editing devices  -->
+        <!-- TODO: Use card reveal for editing -->
+        <div id="add_modal" class="modal modal-fixed-footer" style="overflow: visible;">
+            <form id="add_form" method="POST" action="#">
+                <div class="modal-content" style="overflow-y: visible !important;">
+                    <h4><span id="title"></span></h4>
+                    <div class="row">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input placeholder="Nombre Dispositivo" id="device_name" type="text" class="validate"
+                                    required>
+                                <label for="device_name">Nombre Dispositivo</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input placeholder="Descripción Dispositivo" id="device_description" type="text"
+                                    class="validate" required>
+                                <label for="device_description">Descripción Dispositivo</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6 l6">
+                                <select id="device_type">
+                                    <option value="" selected disabled>Tipo</option>
+                                    <option value="1">On/Off</option>
+                                    <option value="2">Regulable</option>
+                                </select>
+                                <label>Tipo Control</label>
+                            </div>
+                            <div class="input-field col s12 m6 l6">
+                                <select id="device_dev" style="bottom: 100% !important;">
+                                </select>
+                                <label>Tipo Dispositivo</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6 l6">
+                                <input placeholder="ID Dispositivo" id="device_id" type="text" disabled>
+                                <label for="device_id">ID Dispositivo</label>
+                            </div>
+                            <div class="input-field col s12 m6 l6">
+                                <input id="op_type" type="text" hidden disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn"><i class="material-icons">close</i></a>
+                <a href="#!" id="save_device" class="modal-close waves-effect waves-green btn"><i class="material-icons">save</i></a>
+            </div>
+            </form>
         </div>
     </main>
     <!-- Page Footer -->
