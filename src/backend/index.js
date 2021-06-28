@@ -20,14 +20,24 @@ app.get('/devices/', function(req, res, next) {
             'name': 'Lampara 1', 
             'description': 'Luz living', 
             'state': 0, 
-            'type': 1, 
+            'type': 1,
+            'dev': 'lamp', 
         },
         { 
             'id': 2, 
             'name': 'Ventilador 1', 
             'description': 'Ventilador Habitacion', 
             'state': 1, 
-            'type': 2, 
+            'type': 2,
+            'dev': 'fan', 
+        },
+        { 
+            'id': 3, 
+            'name': 'AC 3', 
+            'description': 'Aire Acondicionado Cocina', 
+            'state': 0, 
+            'type': 2,
+            'dev': 'cooler', 
         },
     ]
     res.send(JSON.stringify(devices)).status(200);
