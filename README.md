@@ -13,10 +13,6 @@ La aplicación IoT de base que viene con este proyecto se encarga de crear una t
 
 Realizando estas tareas vas a a tener una aplicación fullstack IoT del mundo real que utiliza tecnologías actuales en la que un backend es capaz de interactuar con una DB para cumplir con las peticiones de control que se le mandan desde el cliente web.
 
-En esta imagen podés ver una posible implementación del cliente web que controla los artefactos del hogar.
-
-![architecture](doc/webapp-example-1.png)
-
 ## Comenzando 🚀
 
 Esta sección es una guía con los pasos escenciales para que puedas poner en marcha la aplicación.
@@ -31,17 +27,20 @@ En [este artículo](https://www.gotoiot.com/pages/articles/docker_installation_l
 
 En caso que quieras instalar las herramientas en otra plataforma o tengas algún incoveniente, podes leer la documentación oficial de [Docker](https://docs.docker.com/get-docker/) y también la de [Docker Compose](https://docs.docker.com/compose/install/).
 
+En caso de utilizar Windows, se recomienda configurar Docker Desktop con Windows Subsystem for Linux (WSL 2) y correr
+la aplicación desde allí. Una opción independiente de la plataforma es utilizar [Play With Docker](https://labs.play-with-docker.com/), que cuenta con soporte para Docker Compose y basta únicamente con descargar el repositorio y ejecutar el comando docker-compose up.
+
 Continua con la descarga del código cuando tengas las dependencias instaladas y funcionando.
 
 ### Descargar el código
 
-Para descargar el código, lo más conveniente es que realices un `fork` de este proyecto a tu cuenta personal haciendo click en [este link](https://github.com/gotoiot/app-fullstack-base/fork). Una vez que ya tengas el fork a tu cuenta, descargalo con este comando (acordate de poner tu usuario en el link):
+Para descargar el código, es necesario únicamente ejecutar el siguiente comando. 
 
 ```
 git clone https://github.com/USER/app-fullstack-base.git
 ```
 
-> En caso que no tengas una cuenta en Github podes clonar directamente este repo.
+> En caso que no tengas una cuenta de Github configurada en el equipo, se puede utilizar el archivo descargable en formato ZIP.
 
 ### Ejecutar la aplicación
 
@@ -52,6 +51,8 @@ Para acceder al cliente web ingresa a a la URL [http://localhost:8000/](http://l
 Si pudiste acceder al cliente web y al administrador significa que la aplicación se encuentra corriendo bien. 
 
 > Si te aparece un error la primera vez que corres la app, deteńe el proceso y volvé a iniciarla. Esto es debido a que el backend espera que la DB esté creada al iniciar, y en la primera ejecución puede no alcanzar a crearse. A partir de la segunda vez el problema queda solucionado.
+
+En caso de realizar revisiones o modificaciones al código, se recomienda utilizar Visual Studio Code y descargar la extensión de Docker que permite utilizar docker compose sin ningún inconveniente.
 
 </details>
 
@@ -158,39 +159,80 @@ En esta sección podés ver los detalles específicos de funcionamiento del cód
 
 ### Agregar un dispositivo
 
-Completá los pasos para agregar un dispositivo desde el cliente web.
+Para agregar un dispositivo, se ha incorporado un botón que abre un formulario web en un modal de Materialize, para respetar la condición de Single Page Application. El formulario permite indicar el nombre, las descripción, el tipo del dispositivo (varias opciones) y el tipo de control (On/Off, Regulable). Una vez guardados los cambios, se obtienen los datos registrados y mediante un método POST a la API, se registra el nuevo dispositivo en la base de datos de MySQL. Los detalles de la implementación de la API se verán en la sección de Backend.
+
+A continuación, se observa la funcionalidad en el sistema:
+
+![new_device](new_device.PNG)
 
 ### Frontend
 
-Completá todos los detalles sobre cómo armaste el frontend, sus interacciones, etc.
+La vista principal de la aplicación es el dashboard donde se listan todos los dispositivos. Se ha utilizado como elemento de Material Design las Cards por permitir embeber de forma visualmente agradable, los controles de los dispositivos, la descripción y los botones correspondientes. Cada una de las Cards se crea de forma dinámica con AJAX mediante una llamada a un endpoint de la API que devuelve el listado completo de dispositivos. Por otro lado, se agregan de forma dinámica los íconos de cada dispositivo de acuerdo a su tipo configurado. A continuación, se muestra un ejemplo de la pantalla principal:
+
+![new_device](dashboard.PNG)
+
+Como se puede observar, para cada dispositivo se pueden editar sus datos principales (nombre, descripción, tipo, contro, etc.), eliminar los mísmos, y lo más importante, modificar su estado mediante los controles visibles (checkbox para On/Off, slider para dispositivos regulables). Cada una de éstas acciones dispara un evento que realiza una consulta a la API, ya sea para actualizar el dispositivo, su valor o eliminarlo completamente. En el caso de la edición, se reutiliza el mísmo modal que para un nuevo dispositivo, como se observa en la siguiente figura:
+
+![new_device](edit_device.PNG)
+
+Por último, previendo que si el número de dispositivos incrementa, sería complejo poder visualizar en una única pantalla todos ellos, se colocó un campo de filtro para poder indicar qué tipo/s de dispositivos se quieren observar:
+
+![new_device](filter.PNG)
 
 ### Backend
 
-Completá todos los detalles de funcionamiento sobre el backend, sus interacciones con el cliente web, la base de datos, etc.
+Para el desarrollo del Backend, se ha utilizado NodeJS con Express para la API. La mísma se comunica mediante la base de datos en MySQL que cuenta con una tabla Devices que tiene la siguiente estructura:
 
-<details><summary><b>Ver los endpoints disponibles</b></summary><br>
+- `id` int(11) NOT NULL
+- `name` varchar(64) NOT NULL
+- `description` varchar(128) NOT NULL
+- `state` int(11) NOT NULL
+- `type` int(11) NOT NULL
+- `dev` varchar(64) NOT NULL
 
-Completá todos los endpoints del backend con los metodos disponibles, los headers y body que recibe, lo que devuelve, ejemplos, etc.
+Todas las respuestas al frontend se realizan en formato JSON el cual se parsea en Typescript. La recepción de datos se realiza siempe por métodos POST para evitar la exposición de los datos. Para acceder a la estructura de la base de datos, se puede utilizar PHPMyAdmin accediendo a:
+
+* http://localhost:8001 con el usuario 'root' y contraseña 'userpass'
+
+![PHPMyAdmin](phpMyAdmin.PNG)
+
+<details><summary><b>Detalle de implementación endpoints</b></summary><br>
+
+A continuación, se observa la implementación de los principales endpoints de la API: 
 
 1) Devolver el estado de los dispositivos.
 
 ```json
-{
-    "method": "get",
-    "request_headers": "application/json",
-    "request_body": "",
-    "response_code": 200,
-    "request_body": {
-        "devices": [
-            {
-                "id": 1,
-                "status": true,
-                "description": "Kitchen light"
-            }
-        ]
-    },
-}
+Endpoint: http://localhost:8000/devices
+Metodo: GET
+
 ``` 
+2) Actualizar el valor de los dispositivos.
+```json
+Endpoint: http://localhost:8000/value_update
+Metodo: POST
+Header: "Content-Type", "application/json"
+Datos: {"id": "id", "value":"value"}
+
+``` 
+3) Agregar un dispositivo
+
+```json
+Endpoint: http://localhost:8000/create/
+Metodo: POST
+Header: "Content-Type", "application/json"
+Datos: {"dev": "tipo_dispositivo", "name": "nombre_dispositivo", "description": "descripcion_dispositivo", "type":"control_tipo", "state":"valor"}
+``` 
+
+4) Editar un dispositivo
+
+```json
+Endpoint: http://localhost:8000/update/
+Metodo: POST
+Header: "Content-Type", "application/json"
+Datos: {"id": "id", "dev": "tipo_dispositivo", "name": "nombre_dispositivo", "description": "descripcion_dispositivo", "type":"control_tipo", "state":"valor"}
+``` 
+
 
 </details>
 
@@ -243,6 +285,7 @@ Las colaboraciones principales fueron realizadas por:
 * **[Agustin Bassi](https://github.com/agustinBassi)**: Ideación, puesta en marcha y mantenimiento del proyecto.
 * **[Ernesto Giggliotti](https://github.com/ernesto-g)**: Creación inicial del frontend, elección de Material Design.
 * **[Brian Ducca](https://github.com/brianducca)**: Ayuda para conectar el backend a la base de datos, puesta a punto de imagen de Docker.
+* **[Lautaro Delgado](https://github.com/lautarodc)**: Implementación de Frontend y de Backend para las distintas funcionalidades de la SPA.
 
 También podés mirar todas las personas que han participado en la [lista completa de contribuyentes](https://github.com/###/contributors).
 
